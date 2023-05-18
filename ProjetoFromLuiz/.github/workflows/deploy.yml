@@ -1,4 +1,4 @@
-﻿name: .NET Core Desktop
+name: servidorPessoa
 
 on:
   push:
@@ -82,7 +82,7 @@ jobs:
         SSH_PRIVATE_KEY: ${{secrets.EC2_SSH_KEY}}
         ARGS: "-rltgoDzvO --delete"
         SOURCE: "./"
-        REMOTE_HOST: ${{secrets.REMOTE_HOST}}
-        REMOTE_USER: ${{secrets.REMOTE_USER}}
-        TARGET: ${{secrets.TARGET_DIR}}
+        REMOTE_HOST: "ip-172-31-12-247.sa-east-1.compute.internal"
+        REMOTE_USER: "pessoa"
+        TARGET: "/home/pessoa"
 
