@@ -1,4 +1,4 @@
-﻿name: Push-to-EC2
+name: servidorPessoa
 on:
   push:
     branches:
