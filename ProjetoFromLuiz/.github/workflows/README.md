@@ -1,1 +1,29 @@
 ﻿Hello from inside the EC2 instance
+
+aqui foi outro teste
+
+name: Push-to-EC2
+on:
+  push:
+    push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the files
+      uses: actions/checkout@v3
+
+    - name: Copy files with SSH
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        SOURCE: "./"
+        REMOTE_HOST: "ec2-54-233-177-132.sa-east-1.compute.amazonaws.com"
+        REMOTE_USER: "ec2-user"
+        TARGET: "/home/ec2-user"
