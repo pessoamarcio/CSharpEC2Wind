@@ -19,4 +19,4 @@ jobs:
 
     - name: Copy files with PuTTY
       run: |
-        pscp -i ${{ secrets.EC2_PRIVATE_KEY }} -r ./ ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ec2-user
+        pscp -i "${{ secrets.EC2_PRIVATE_KEY }}" -r ./ ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ec2-user
