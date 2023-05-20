@@ -25,13 +25,16 @@ jobs:
         run: dotnet publish -c Release -o ./publish
 
       - name: Transferir arquivos para o EC2
-        uses: appleboy/ssh-action@master
+        uses: appleboy/winrm-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST }
+          port: 5986
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          source: ./publish/
-          target: C:\Users\Administrator\Desktop
+          password: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            $session = New-PSSession -ComputerName ${{ secrets.EC2_HOST } -Port 5986 -Credential (Get-Credential)
+            Copy-Item -Path .\publish -Destination 'C:\Users\Administrator\Desktop' -ToSession $session
+            Remove-PSSession -Session $session
 
       - name: Conectar ao EC2
         uses: appleboy/ssh-action@master
