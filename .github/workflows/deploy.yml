@@ -17,7 +17,6 @@ jobs:
       run: |
         choco install putty -y
 
-    - name: Copy files with PuTTY
     - name: Copy files with SSH
       uses: easingthemes/ssh-deploy@main
       env:
