@@ -18,8 +18,6 @@ jobs:
         choco install putty -y
 
     - name: Copy files with PuTTY
-      run: |
-        REMOTE_HOST:${{ secrets.EC2_PRIVATE_KEY }}
-        REMOTE_USER:${{ secrets.EC2_USERNAME }}
-        REMOTE_USER:${{ secrets.EC2_HOST }}
-        TARGET:"C:\Users\Administrator\Desktop"
+       run: |
+        pscp -i "${{ secrets.EC2_PRIVATE_KEY }}" -r ./ ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:"C:\Users\Administrator\Desktop"
+        
