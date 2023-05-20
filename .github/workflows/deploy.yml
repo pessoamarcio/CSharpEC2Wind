@@ -1,3 +1,8 @@
+Novo usuario: pessoa
+senha: Mrsp@@1984
+https://358696111054.signin.aws.amazon.com/console
+
+
 name: Push-to-EC2
 on:
   push:
@@ -18,6 +23,6 @@ jobs:
         choco install putty -y
 
     - name: Copy files with PuTTY
-       run: |
+      run: |
         pscp -i "${{ secrets.EC2_PRIVATE_KEY }}" -r ./ ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:"C:\Users\Administrator\Desktop"
         
