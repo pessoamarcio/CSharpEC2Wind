@@ -22,4 +22,4 @@ jobs:
         REMOTE_HOST: ${{ secrets.EC2_PRIVATE_KEY }}
         REMOTE_USER: ${{ secrets.EC2_USERNAME }}
         REMOTE_USER: ${{ secrets.EC2_HOST }}
-        TARGET: "C:\Users\Administrator\Desktop"
+        TARGET: C:\Users\Administrator\Desktop
