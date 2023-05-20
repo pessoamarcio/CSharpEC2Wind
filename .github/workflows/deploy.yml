@@ -1,4 +1,5 @@
-name: Push-to-EC2
+name: Implantação da API ASP.NET 6.0 no EC2
+
 on:
   push:
     branches:
@@ -6,17 +7,38 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to EC2
     runs-on: windows-latest
 
     steps:
-    - name: Checkout the files
-      uses: actions/checkout@v3
+      - name: Checkout do repositório
+        uses: actions/checkout@v2
 
-    - name: Install PuTTY
-      run: |
-        choco install putty -y
+      - name: Configurar ambiente
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
 
-    - name: Copy files with PuTTY
-      run: |
-        pscp -i "${{ secrets.EC2_PRIVATE_KEY }}" -r ./ ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:"C:\Users\Administrator\Desktop"
+      - name: Restaurar pacotes
+        run: dotnet restore
+
+      - name: Publicar projeto
+        run: dotnet publish -c Release -o ./publish
+
+      - name: Transferir arquivos para o EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          source: ./publish/
+          target: C:\Users\Administrator\Desktop
+
+      - name: Conectar ao EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            cd C:\Users\Administrator\Desktop
+            dotnet MeuProjeto.dll
