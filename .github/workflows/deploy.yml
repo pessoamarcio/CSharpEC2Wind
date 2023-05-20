@@ -17,7 +17,7 @@ jobs:
       run: |
         choco install putty -y
 
-    - name: Copy files with SSH
+    - name: Copy files with PuTTY
       uses: easingthemes/ssh-deploy@main
       env:
         SSH_PRIVATE_KEY: "${{ secrets.EC2_PRIVATE_KEY }}"
