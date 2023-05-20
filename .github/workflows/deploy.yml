@@ -13,11 +13,10 @@ jobs:
     - name: Checkout the files
       uses: actions/checkout@v3
 
-    - name: Copy files with SSH
-      uses: easingthemes/ssh-deploy@main
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
-        SOURCE: "./"
-        REMOTE_HOST: ${{ secrets.EC2_HOST }}
-        REMOTE_USER: ${{ secrets.EC2_USERNAME }}
-        TARGET: "/home/ec2-user"
+    - name: Install PuTTY
+      run: |
+        choco install putty -y
+
+    - name: Copy files with PuTTY
+      run: |
+        pscp -i ${{ secrets.EC2_PRIVATE_KEY }} -r ./ ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/path/to/destination
