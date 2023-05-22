@@ -1,5 +1,4 @@
-name: Deploy to EC2
-
+name: Push-to-EC2
 on:
   push:
     branches:
@@ -7,22 +6,18 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to EC2
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout the files
+      uses: actions/checkout@v3
 
-      - name: Setup remote PowerShell
-        uses: appleboy/remote-powershell@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_PRIVATE_KEY }}
-
-      - name: Copy files to EC2
-        run: |
-          $session = New-PSSession -ComputerName 52.91.196.71 -Credential $env:Administrator
-          Copy-Item -Path "." -Destination "C:\Users\Administrator\Desktop" -Recurse -ToSession $session
-          Remove-PSSession $session
-          
+    - name: Copy files with SSH
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+        SOURCE: "./"
+        REMOTE_HOST: ${{ secrets.EC2_HOST }}
+        REMOTE_USER: ${{ secrets.EC2_USERNAME }}
+        TARGET: "C:\Users\Administrator\Desktop"
