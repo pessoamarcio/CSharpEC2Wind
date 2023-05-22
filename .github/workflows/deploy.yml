@@ -14,7 +14,7 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          $privateKeyPath = "C:\Users\pesso\Desktop\chave EC2 aws e usuario\privaceKeyPPK.ppk"
+          $privateKeyPath = "C:\Users\pesso\Desktop\chave EC2 aws e usuario\privacekey.ppk"
           $remotePath = "C:\Users\Administrator\Desktop"
           $localPath = "C:\Users\pesso\OneDrive\Documentos\projetosdotnet\versaoAtual\ProjetoFromLuiz"
 
