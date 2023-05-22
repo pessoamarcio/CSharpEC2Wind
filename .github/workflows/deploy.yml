@@ -1,4 +1,4 @@
-name: Push-to-EC2
+name: Deploy to EC2
 on:
   push:
     branches:
@@ -6,18 +6,22 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to EC2
     runs-on: windows-latest
 
     steps:
-    - name: Checkout the files
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Copy files with SSH
-      uses: easingthemes/ssh-deploy@main
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
-        SOURCE: "./"
-        REMOTE_HOST: ${{ secrets.EC2_HOST }}
-        REMOTE_USER: ${{ secrets.EC2_USERNAME }}
-        TARGET: "./"
+      - name: Copy files to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: 5986
+          script: |
+            $securePassword = ConvertTo-SecureString -String "${{ secrets.EC2_PASSWORD }}" -AsPlainText -Force
+            $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList Administrator, $securePassword
+            $session = New-PSSession -ComputerName 52.91.196.71 -Credential $credential -Port 5986 -UseSSL
+            Copy-Item -Path "." -Destination "C:\Users\Administrator\Desktop" -Recurse -ToSession $session
+            Remove-PSSession $session
