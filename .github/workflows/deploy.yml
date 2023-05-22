@@ -12,16 +12,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup remote PowerShell
-        uses: appleboy/remote-powershell@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          port: 5986
-          script: |
-            $securePassword = ConvertTo-SecureString -String "${{ secrets.EC2_PASSWORD }}" -AsPlainText -Force
-            $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList Administrator, $securePassword
-            $session = New-PSSession -ComputerName 52.91.196.71 -Credential $credential -Port 5986 -UseSSL
-            Copy-Item -Path "." -Destination "C:\Users\Administrator\Desktop" -Recurse -ToSession $session
-            Remove-PSSession $session
+      - name: Copy files to EC2
+        run: |
+          $winscpPath = "C:\Users\Administrator\\winscp"
+          $winscpExePath = "$winscpPath\WinSCP.com"
+          $winscpIniPath = "$winscpPath\WinSCP.ini"
+
+          # Download WinSCP executable
+          Invoke-WebRequest -Uri "https://winscp.net/download/WinSCP-5.19.3-Portable.zip" -OutFile "${env:TEMP}\WinSCP.zip"
+          Expand-Archive -Path "${env:TEMP}\WinSCP.zip" -DestinationPath $winscpPath -Force
+
+          # Configure WinSCP script
+          @"
+          option batch abort
+          option confirm off
+          open sftp://${{ secrets.EC2_USERNAME }}:${{ secrets.EC2_PASSWORD }}52.91.196.71 -privatekey="C:\Users\Administrator\.ssh\id_rsa.ppk"
+          cd "C:\Users\Administrator\Desktop"
+          put -recursive -delete -nopermissions ./*
+          close
+          exit
+          "@ | Out-File -FilePath $winscpIniPath -Encoding ASCII
+
+          # Execute WinSCP script
+          & $winscpExePath /script=$winscpIniPath
