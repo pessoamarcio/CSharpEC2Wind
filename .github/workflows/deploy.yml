@@ -25,7 +25,7 @@ jobs:
           Import-Module -Name SSH.NET
 
           # Create SSH client
-          $sshClient = New-Object -TypeName Renci.SshNet.SftpClient -ArgumentList 52.91.196.71, "Administrator", $privateKeyPath
+          $sshClient = New-Object -TypeName Renci.SshNet.SftpClient -ArgumentList 54.146.200.153, "Administrator", $privateKeyPath
 
           try {
             # Connect to the SSH server
