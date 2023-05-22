@@ -14,24 +14,27 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          $winscpPath = "C:\Users\Administrator\winscp"
-          $winscpExePath = "$winscpPath\WinSCP.com"
-          $winscpIniPath = "$winscpPath\WinSCP.ini"
+          $privateKeyPath = "C:\Users\pesso\Desktop\chave EC2 aws e usuario\senhaPPK.ppk"
+          $remotePath = "C:\Users\Administrator\Desktop"
+          $localPath = "C:\Users\pesso\OneDrive\Documentos\projetosdotnet\versaoAtual\ProjetoFromLuiz"
 
-          # Download WinSCP executable
-          Invoke-WebRequest -Uri "https://winscp.net/download/WinSCP-5.19.3-Portable.zip" -OutFile "${env:TEMP}\WinSCP.zip"
-          Expand-Archive -Path "${env:TEMP}\WinSCP.zip" -DestinationPath $winscpPath -Force
+          # Install SSH.NET module
+          Install-Module -Name SSH.NET -Force -Scope CurrentUser -AllowClobber
 
-          # Configure WinSCP script
-          @"
-          option batch abort
-          option confirm off
-          open sftp://${{ secrets.EC2_USERNAME }}:${{ secrets.EC2_PASSWORD }}52.91.196.71 -privatekey="C:\Users\Administrator\.ssh\id_rsa.ppk"
-          cd "C:\Users\Administrator\Desktop"
-          put -recursive -delete -nopermissions ./*
-          close
-          exit
-          "@ | Out-File -FilePath $winscpIniPath -Encoding ASCII
+          # Import SSH.NET module
+          Import-Module -Name SSH.NET
 
-          # Execute WinSCP script
-          & $winscpExePath /script=$winscpIniPath
+          # Create SSH client
+          $sshClient = New-Object -TypeName Renci.SshNet.SftpClient -ArgumentList 52.91.196.71, "Administrator", $privateKeyPath
+
+          try {
+            # Connect to the SSH server
+            $sshClient.Connect()
+
+            # Upload files to the remote server
+            $sshClient.UploadDirectory($localPath, $remotePath, $null)
+          }
+          finally {
+            # Disconnect from the SSH server
+            $sshClient.Disconnect()
+          }
